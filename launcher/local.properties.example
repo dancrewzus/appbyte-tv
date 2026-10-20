@@ -1,0 +1,10 @@
+# Copy to launcher/local.properties (it is git-ignored) and edit. Every key is optional.
+sdk.dir=/path/to/Android/sdk                  # Android Studio writes this line for you
+
+# --- AppByte TV settings (see docs/CONFIGURATION.md) ---
+# appbyte.userName=Ana                         # initial shown in the avatar circle
+# appbyte.lat=40.4168                          # your location: day/sunset/night + weather (without it the clock decides and there is no weather)
+# appbyte.lon=-3.7038
+# appbyte.liveTv=com.example.tv/com.example.tv.LiveActivity   # your TV's live-TV activity; empty hides the "TV en vivo" tab
+# appbyte.hubUrl=http://192.168.1.10:8190      # optional home hub (docs/HUB_API.md): house cards, lights, Jellyfin row, status page
+# appbyte.avatarName=ana                       # name asked to the hub for the profile picture
