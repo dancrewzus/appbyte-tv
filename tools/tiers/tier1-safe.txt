@@ -1,0 +1,10 @@
+# TIER 1 - nothing visible is lost. Example list measured on a Philips 50PUD7906 (Android 11, 1.4 GB RAM).
+# Package names differ per brand and model: run `adb shell pm list packages -s` and check each one before using it on another TV.
+com.google.android.play.games             # Google Play Games (cloud gaming): nobody uses it on a TV
+com.google.android.feedback               # sends feedback to Google
+com.google.android.onetimeinitializer     # first-run wizard
+com.google.android.partnersetup           # partner pre-installs setup
+com.google.android.tungsten.setupwraith   # initial setup wizard (already set up)
+com.google.android.syncadapters.calendar  # Google Calendar sync (the TV shows no calendar)
+fusion.android.tv.demo                    # store demo mode
+org.droidtv.tv.frameworklogger            # Philips logging / telemetry

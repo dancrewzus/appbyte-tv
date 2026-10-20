@@ -1,0 +1,13 @@
+# TIER 2 - saves more memory, but each line is a feature you may miss. Read the comment before keeping a line.
+# (same Philips 50PUD7906 example; adapt the names to your TV)
+com.google.android.tvrecommendations      # recommendation rows of Google's home screen (58 MB). Safe once AppByte TV is Home. Do NOT remove if you keep the Google launcher
+com.google.android.videos                 # Google TV store (buy/rent movies)
+com.google.android.youtube.tvmusic        # YouTube Music
+com.google.android.marvin.talkback        # screen reader (accessibility): keep it if anyone needs it
+org.droidtv.nettv.market                  # Philips app gallery (44 MB)
+org.droidtv.nettvregistration             # Philips Smart TV registration (40 MB)
+org.droidtv.icp                           # Philips interactive content platform (39 MB, ads and promotions)
+com.tpv.xmic.ots.cms.client               # TPV/Philips content-management client (promotional messages)
+org.droidtv.candeebug                     # Philips diagnostics (35 MB)
+org.droidtv.android.fitness               # Philips fitness app
+# Not listed on purpose: com.google.android.katniss (Google Assistant, the voice button of the remote). Removing it breaks voice search.
