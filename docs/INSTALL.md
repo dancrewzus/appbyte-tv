@@ -35,12 +35,14 @@ Requirements: JDK 17 and the Android SDK (platform 35). Android Studio provides 
 ```bash
 cd launcher
 cp local.properties.example local.properties    # then edit (see docs/CONFIGURATION.md)
-./gradlew assembleDebug
-# result: launcher/app/build/outputs/apk/debug/app-debug.apk   (~3.6 MB)
+./gradlew assembleFullDebug
+# result: launcher/app/build/outputs/apk/full/debug/app-full-debug.apk   (~3.6 MB with wallpapers, ~1.3 MB without)
 ```
 
 On macOS with Android Studio's bundled JDK:
-`JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew assembleDebug`
+`JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew assembleFullDebug`
+
+Other variants: `assembleLocDebug`, `assembleLiteDebug` (see [Build variants](../README.md#build-variants)).
 
 The Gradle wrapper (`gradlew`) downloads Gradle 8.14.3 by itself.
 
@@ -91,6 +93,25 @@ tools/install.sh 192.168.1.50 --make-home       # or:  tools/debloat.sh 192.168.
 > ⚠️ **Do this only with a version you tested.** If AppByte TV crashed at start with the stock launcher disabled, you would see a grey screen. Recovery is one command from your computer: `tools/debloat.sh <ip> launcher-on`.
 
 The stock launcher package is `com.google.android.tvlauncher` on Google-certified TVs. Other brands differ (`adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME`); pass the package as the third argument: `tools/debloat.sh <ip> launcher-off <package>`.
+
+## Installing without ADB (Play Protect blocks it)
+
+Some TVs never open ADB over the network (a 2017 Sony Bravia on Android 9 did not: no network-debugging option, closed port 5555, USB ports are host-only). You can still install and use AppByte TV:
+
+1. **Build a lower-risk variant.** Play Protect refused the `full` APK ("this app may request access to sensitive data", no *install anyway* button) because it combines notification access, location and all-apps visibility. Build `loc` (adds back the location permission, so the Wi-Fi name shows) or, if that is blocked too, `lite`:
+   ```bash
+   cd launcher && ./gradlew assembleLocRelease          # app/build/outputs/apk/loc/release/app-loc-release-unsigned.apk
+   ```
+2. **Sign it with a normal key** (not the debug key):
+   ```bash
+   keytool -genkeypair -v -keystore my.jks -alias appbyte -keyalg RSA -keysize 2048 -validity 10000     # once
+   tools/sign-apk.sh launcher/app/build/outputs/apk/loc/release/app-loc-release-unsigned.apk appbyte-loc.apk my.jks appbyte
+   ```
+   On the tested Sony the debug-signed builds were refused and the release-signed `lite`/`loc` installed.
+3. **Copy it to the TV:** a FAT32/exFAT USB stick plus a file manager app from the TV's Play Store (File Commander, X-plore), or *Send Files to TV* from a phone on the same network. Allow "unknown sources" for that file manager when asked.
+4. **What you lose without ADB:** the mini music player (notification access), `pm grant`-style set-up (the app asks for location itself on first start, once), measuring RAM, debloating by list, and **disabling the stock launcher** — on the Sony that button does not exist ("Android TV Home" is protected), so Home keeps opening the vendor's launcher. Open AppByte TV from the apps list, set it as the screensaver (Settings → Device preferences → Screen saver), or put a small Android TV box with ADB on the HDMI port and make *that* the home.
+
+> The same applies if you publish the app on Google Play: it needs `targetSdk` 34 or higher, a Play developer account and a justification for sensitive permissions; the `lite`/`loc` variants are the ones to start from.
 
 ## Updating
 

@@ -28,6 +28,16 @@ Compiled into the app as `BuildConfig` fields. `local.properties` is git-ignored
 
 The app does **not** read notifications' content: `MediaListener` is an empty service; enabling it is only what Android requires to open `MediaSessionManager.getActiveSessions()`.
 
+## Variants and permissions
+
+| Variant | `QUERY_ALL_PACKAGES` | `ACCESS_FINE_LOCATION` | Notification listener (`MediaListener`) |
+|---|---|---|---|
+| `full` | yes | yes | yes |
+| `loc` | no (uses `<queries>`) | yes (asked once at first start) | no |
+| `lite` | no (uses `<queries>`) | no | no |
+
+Without the notification listener there is no mini music player. Without location Android hides the Wi-Fi name (band and speed still show).
+
 ## Preferences stored on the TV
 
 `SharedPreferences` file `launcher` (inspect: `adb shell run-as cl.appbyte.tv cat shared_prefs/launcher.xml`, debug builds only):
@@ -37,6 +47,7 @@ The app does **not** read notifications' content: `MediaListener` is an empty se
 | `clean` | `true` = *Abstracto*, `false` = *Paisaje* |
 | `order` | comma-separated package list of the home row when you moved apps by hand (empty = automatic, most-used first) |
 | `n_<package>` | how many times the app was opened from the launcher |
+| `asked_loc` | the app already asked for the location permission once (it never nags) |
 
 Reset the order from the app: hold **OK** on any app → *Orden automático*.
 

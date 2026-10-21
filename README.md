@@ -64,7 +64,7 @@ You need: an Android TV with **ADB over network** enabled, a computer with `adb`
 ```bash
 git clone https://github.com/dancrewzus/appbyte-tv.git && cd appbyte-tv/launcher
 cp local.properties.example local.properties        # edit: your location, name, ... (all optional)
-./gradlew assembleDebug                              # -> app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleFullDebug                          # -> app/build/outputs/apk/full/debug/app-full-debug.apk  (variants: see below)
 cd .. && tools/install.sh 192.168.1.50               # install on the TV (use your TV's IP)
 ```
 
@@ -129,6 +129,16 @@ Switch with the palette button in the side panel. The choice is remembered. With
 | Side panel → eye | **OK** | hide / show the rows |
 | Side panel → palette | **OK** | switch theme |
 
+## Build variants
+
+| Variant | Permissions | Use it when |
+|---|---|---|
+| `full` | everything: all-apps visibility, notification access (mini music player), location (Wi-Fi name) | your TV lets you install it (ADB, or Play Protect does not object) |
+| `loc` | `lite` + location (shows the Wi-Fi name; the app asks for it once) | **the usual choice without ADB** |
+| `lite` | none of the sensitive ones | Play Protect blocks `loc` too |
+
+Some TVs (a 2017 Sony Bravia, for one) show *"app blocked to protect your device"* for `full` because it combines sensitive permissions, with no "install anyway" button. The `lite`/`loc` variants install there **when signed with a normal (non-debug) key**: build a release APK (`./gradlew assembleLocRelease`) and sign it with `tools/sign-apk.sh`. Details and the whole no-ADB route: [docs/INSTALL.md](docs/INSTALL.md#installing-without-adb-play-protect-blocks-it).
+
 ## Optional home hub
 
 AppByte TV can talk to a tiny HTTP service on your LAN (the **hub**) for smart-home data. The contract is 6 endpoints and is documented in [docs/HUB_API.md](docs/HUB_API.md). To try it with zero setup run the included stand-in:
@@ -146,13 +156,15 @@ Many TVs ship with 100+ background packages that eat RAM. `tools/debloat.sh` rem
 
 | TV | Android | RAM | Result |
 |---|---|---|---|
-| Philips 50PUD7906 | 11 (API 30) | 1.4 GB | everything in this README |
+| Philips 50PUD7906 | 11 (API 30) | 1.4 GB | everything in this README (ADB over network, stock launcher disabled) |
+| Sony BRAVIA XBR-55X805E | 9 (API 28) | — | works with the `loc` variant signed with a non-debug key; `full` is blocked by Play Protect; no ADB over network, so the stock launcher cannot be disabled |
 
 `minSdk` is 26 (Android 8), so 2017+ TVs should work, but only the TV above has been tested. Reports for other models are very welcome (open an issue with brand, model and Android version).
 
 ## Known limitations
 
 * **The interface is in Spanish** (strings are in the code, not yet in `strings.xml`). Translating is a good first contribution.
+* On TVs that do not let you disable the stock launcher (no ADB), **Home keeps opening the vendor's launcher**; AppByte TV is then an app you open from the apps list.
 * With the stock launcher **disabled**, Google's own global search and title pages do not open (they live inside that launcher); AppByte TV has its own search instead.
 * "Continue watching" only shows what each app chooses to publish. Some apps publish nothing.
 * The mini player supports Spotify only.

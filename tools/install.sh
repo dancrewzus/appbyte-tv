@@ -9,9 +9,9 @@
 set -euo pipefail
 ADB=${ADB:-adb}
 IP=${1:?usage: $0 <tv-ip> [apk] [--location] [--screensaver] [--make-home]}; shift
-APK=launcher/app/build/outputs/apk/debug/app-debug.apk; LOC=0; SAVER=0; HOME_=0
+APK=launcher/app/build/outputs/apk/full/debug/app-full-debug.apk; LOC=0; SAVER=0; HOME_=0
 for a in "$@"; do case "$a" in --location) LOC=1;; --screensaver) SAVER=1;; --make-home) HOME_=1;; *.apk) APK=$a;; *) echo "unknown option $a"; exit 1;; esac; done
-[ -f "$APK" ] || { echo "APK not found: $APK (build it first: cd launcher && ./gradlew assembleDebug)"; exit 1; }
+[ -f "$APK" ] || { echo "APK not found: $APK (build it first: cd launcher && ./gradlew assembleFullDebug  — or assembleLiteDebug / assembleLocDebug, see docs/INSTALL.md)"; exit 1; }
 $ADB connect "$IP:5555" >/dev/null
 A() { $ADB -s "$IP:5555" shell "$@"; }
 $ADB -s "$IP:5555" install -r "$APK"

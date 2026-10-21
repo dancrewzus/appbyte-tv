@@ -109,6 +109,18 @@ class HomeActivity : Activity() {
         aire.set(line = "…"); dormir.set(line = "Apaga todo"); cine.set(line = "atenúa la casa"); habitacion.set(line = "…")
         dormir.tag = "h:dormir"; cine.tag = "h:cine"; habitacion.tag = "h:hab"; aire.tag = "h:aire"
         loadAvatar()
+        askLocationOnce()
+    }
+
+    /** Without ADB nobody can `pm grant`: ask once for the location permission that lets Android show the Wi-Fi name (only if this build declares it). */
+    private fun askLocationOnce() {
+        val perm = android.Manifest.permission.ACCESS_FINE_LOCATION
+        if (android.os.Build.VERSION.SDK_INT < 23 || Demo.on || checkSelfPermission(perm) == android.content.pm.PackageManager.PERMISSION_GRANTED) return
+        val declared = try { packageManager.getPackageInfo(packageName, android.content.pm.PackageManager.GET_PERMISSIONS).requestedPermissions?.contains(perm) == true } catch (e: Exception) { false }
+        val sp = getSharedPreferences("launcher", MODE_PRIVATE)
+        if (!declared || sp.getBoolean("asked_loc", false)) return
+        sp.edit().putBoolean("asked_loc", true).apply()
+        requestPermissions(arrayOf(perm), 7)
     }
 
     override fun onResume() {

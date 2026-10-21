@@ -56,7 +56,7 @@ Necesitas: una Android TV con **ADB por red** activado y un computador con `adb`
 ```bash
 git clone https://github.com/dancrewzus/appbyte-tv.git && cd appbyte-tv/launcher
 cp local.properties.example local.properties        # edita: tu ubicación, tu nombre… (todo es opcional)
-./gradlew assembleDebug                              # -> app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleFullDebug                          # -> app/build/outputs/apk/full/debug/app-full-debug.apk  (variantes: ver abajo)
 cd .. && tools/install.sh 192.168.1.50               # instala en la TV (usa la IP de tu TV)
 ```
 
@@ -118,6 +118,16 @@ Se cambia con el botón de paleta del panel lateral y se recuerda. Sin fondos in
 | Panel lateral → ojo | **OK** | ocultar / mostrar las filas |
 | Panel lateral → paleta | **OK** | cambiar de tema |
 
+## Variantes de compilación
+
+| Variante | Permisos | Úsala cuando |
+|---|---|---|
+| `full` | todos: ver todas las apps, acceso a notificaciones (mini reproductor), ubicación (nombre del Wi-Fi) | tu TV deja instalarla (ADB, o Play Protect no se opone) |
+| `loc` | `lite` + ubicación (muestra el nombre del Wi-Fi; la app lo pide una vez) | **la opción habitual sin ADB** |
+| `lite` | ninguno de los sensibles | Play Protect también bloquea `loc` |
+
+Algunas TVs (una Sony Bravia de 2017, por ejemplo) muestran *"app bloqueada para proteger el equipo"* con `full`, porque junta permisos sensibles, y sin botón de "instalar de todos modos". Las variantes `lite`/`loc` sí instalan **si van firmadas con una clave normal (no la de depuración)**: compila una APK de lanzamiento (`./gradlew assembleLocRelease`) y fírmala con `tools/sign-apk.sh`. Detalles y toda la ruta sin ADB: [docs/INSTALL.md](docs/INSTALL.md#installing-without-adb-play-protect-blocks-it) *(en inglés)*.
+
 ## Hub opcional de la casa
 
 AppByte TV puede hablar con un pequeño servicio HTTP de tu red local (el **hub**) para datos de domótica. El contrato son 6 endpoints y está en [docs/HUB_API.md](docs/HUB_API.md). Para probarlo sin montar nada, usa el sustituto incluido:
@@ -135,13 +145,15 @@ Muchas TVs traen más de 100 paquetes en segundo plano que se comen la RAM. `too
 
 | TV | Android | RAM | Resultado |
 |---|---|---|---|
-| Philips 50PUD7906 | 11 (API 30) | 1,4 GB | todo lo descrito aquí |
+| Philips 50PUD7906 | 11 (API 30) | 1,4 GB | todo lo descrito aquí (ADB por red, launcher de fábrica desactivado) |
+| Sony BRAVIA XBR-55X805E | 9 (API 28) | — | funciona con la variante `loc` firmada con una clave que no sea la de depuración; `full` la bloquea Play Protect; sin ADB por red no se puede desactivar el launcher de fábrica |
 
 `minSdk` es 26 (Android 8), por lo que las TVs de 2017 en adelante deberían funcionar, pero solo se probó la de arriba. Los reportes de otros modelos son muy bienvenidos (abre un *issue* con marca, modelo y versión de Android).
 
 ## Limitaciones conocidas
 
 * **La interfaz está en español** (los textos están en el código, aún no en `strings.xml`). Traducirla es un buen primer aporte.
+* En TVs que no dejan desactivar el launcher de fábrica (sin ADB), **Inicio sigue abriendo el del fabricante**; AppByte TV queda como una app que abres desde la lista.
 * Con el launcher de fábrica **desactivado**, la búsqueda global de Google y sus fichas de títulos no se abren (viven dentro de ese launcher); AppByte TV tiene su propia búsqueda.
 * "Continuar viendo" solo muestra lo que cada app decide publicar. Algunas no publican nada.
 * El mini reproductor soporta solo Spotify.
